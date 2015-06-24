@@ -1,21 +1,40 @@
-package foo
+package main
 
-import (
-	"fmt"
-	"net/http"
-)
+import "fmt"
 
-//go:generate go-macro
+//go:generate go-codegen
 
-type Action struct{}
+// cmd is a template.  Blank interfaces are good to use for targeting templates
+// as they do not affect the compiled package.
+type cmd interface {
+	Execute() (interface{}, error)
+	MustExecute() interface{}
+}
 
-func (action *Action) Prepare(w http.ResponseWriter, r *http.Request) {}
-func (action *Action) Execute(a interface{})                          {}
+type HelloCommand struct {
+	// HelloCommand needs to have the `cmd` template invoked upon it.
+	// By mixing in cmd, we tell go-codegen so.
+	cmd
+	Name string
+}
 
-type MyCustomAction struct {
-	Action `macro:"arg1,second_atg"`
+func (cmd *HelloCommand) Execute() (interface{}, error) {
+	return "Hello, " + cmd.Name, nil
+}
+
+type GoodbyeCommand struct {
+	cmd
+	Name string
+}
+
+func (cmd *GoodbyeCommand) Execute() (interface{}, error) {
+	return "Goodbye, " + cmd.Name, nil
 }
 
 func main() {
-	fmt.Println(MyCustomAction{})
+	var c cmd
+	c = &HelloCommand{Name: "You"}
+	fmt.Println(c.MustExecute())
+	c = &GoodbyeCommand{Name: "You"}
+	fmt.Println(c.MustExecute())
 }

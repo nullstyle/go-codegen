@@ -1,17 +1,23 @@
-package foo
+package main
 
-import (
-	"net/http"
-)
+// MustExecute behaves like Execute, but panics if an error occurs.
+func (cmd *HelloCommand) MustExecute() interface{} {
+	result, err := cmd.Execute()
 
-// ServeHTTPC is a method for web.Handler
-func (action MyCustomAction) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	if err != nil {
+		panic(err)
+	}
 
-	_ = "arg1"
+	return result
+}
 
-	_ = "second_atg"
+// MustExecute behaves like Execute, but panics if an error occurs.
+func (cmd *GoodbyeCommand) MustExecute() interface{} {
+	result, err := cmd.Execute()
 
-	ap := &action
-	ap.Prepare(w, r)
-	ap.Execute(&action)
+	if err != nil {
+		panic(err)
+	}
+
+	return result
 }
