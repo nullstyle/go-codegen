@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	macro "github.com/nullstyle/go-macro"
+	macro "github.com/nullstyle/go-codegen"
 )
 
 func main() {

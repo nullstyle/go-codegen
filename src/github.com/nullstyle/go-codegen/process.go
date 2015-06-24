@@ -114,13 +114,13 @@ func ProcessSpec(ctx *Context, w io.Writer, spec ast.Spec) error {
 		return nil
 	}
 
-	macros, err := ExtractMacrosFromType(ctx, stp)
+	templates, err := ExtractTemplatesFromType(ctx, stp)
 	if err != nil {
 		return err
 	}
 
-	for _, macroName := range macros {
-		err := RunMacro(ctx, w, macroName, tsp.Name.Name, stp)
+	for _, templateName := range templates {
+		err := RunTemplate(ctx, w, templateName, tsp.Name.Name, stp)
 		if err != nil {
 			return err
 		}

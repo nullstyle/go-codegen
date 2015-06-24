@@ -10,7 +10,7 @@ import (
 type Context struct {
 	Dir         string
 	Fset        *token.FileSet
-	Macros      map[string]*template.Template
+	Templates   map[string]*template.Template
 	PackageName string
 	Imports     []string
 }
@@ -33,7 +33,7 @@ func (ctx *Context) Populate() error {
 		return err
 	}
 
-	ctx.Macros = make(map[string]*template.Template)
+	ctx.Templates = make(map[string]*template.Template)
 
 	for _, p := range paths {
 		base := path.Base(p)
@@ -44,7 +44,7 @@ func (ctx *Context) Populate() error {
 			return err
 		}
 
-		ctx.Macros[name] = t
+		ctx.Templates[name] = t
 	}
 
 	return nil

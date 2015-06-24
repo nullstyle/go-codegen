@@ -25,7 +25,7 @@ func ExtractArgs(ctx *Context, stp *ast.StructType, name string) ([]string, erro
 	}
 
 	if found == nil {
-		return nil, errors.New("Couldn't find macro invokation: " + name)
+		return nil, errors.New("Couldn't find template invokation: " + name)
 	}
 
 	if found.Tag == nil {
@@ -34,10 +34,10 @@ func ExtractArgs(ctx *Context, stp *ast.StructType, name string) ([]string, erro
 
 	tag := reflect.StructTag(found.Tag.Value[1 : len(found.Tag.Value)-1])
 
-	return strings.Split(tag.Get("macro"), ","), nil
+	return strings.Split(tag.Get("template"), ","), nil
 }
 
-func ExtractMacrosFromType(ctx *Context, stp *ast.StructType) (result []string, err error) {
+func ExtractTemplatesFromType(ctx *Context, stp *ast.StructType) (result []string, err error) {
 	for _, f := range stp.Fields.List {
 		var name string
 		name, err = nameFromFieldType(ctx, f.Type)
@@ -45,11 +45,11 @@ func ExtractMacrosFromType(ctx *Context, stp *ast.StructType) (result []string, 
 			return
 		}
 
-		if _, ok := ctx.Macros[name]; ok {
+		if _, ok := ctx.Templates[name]; ok {
 			result = append(result, name)
 
 			if len(f.Names) != 0 {
-				fmt.Fprintf(os.Stderr, "warn: invokation of macro '%s' has a field name\n", name)
+				fmt.Fprintf(os.Stderr, "warn: invokation of template '%s' has a field name\n", name)
 			}
 		}
 	}
