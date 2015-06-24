@@ -27,6 +27,11 @@ func (mc *MacroContext) Args() []string {
 	return result
 }
 
+func (mc *MacroContext) AddImport(name string) string {
+	mc.Ctx.Imports = append(mc.Ctx.Imports, name)
+	return ""
+}
+
 func RunMacro(ctx *Context, w io.Writer, macroName string, typeName string, st *ast.StructType) error {
 	template, ok := ctx.Macros[macroName]
 	if !ok {

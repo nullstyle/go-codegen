@@ -12,6 +12,7 @@ type Context struct {
 	Fset        *token.FileSet
 	Macros      map[string]*template.Template
 	PackageName string
+	Imports     []string
 }
 
 func NewContext(dir string) (*Context, error) {

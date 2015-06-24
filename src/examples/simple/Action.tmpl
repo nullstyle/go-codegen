@@ -1,17 +1,13 @@
-package {{ .PackageName }}
-
-import (
-	"net/http"
-)
+{{ .AddImport "net/http" }}
 
 // ServeHTTPC is a method for web.Handler
-func (action *{{ .Name }}) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (action {{ .Name }}) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	{{range $arg := .Args}}
 	_ = "{{$arg}}"
 	{{end}}
 
-	ap := &action.Action
+	ap := &action
 	ap.Prepare(w, r)
 	ap.Execute(&action)
 }
