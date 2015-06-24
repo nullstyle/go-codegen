@@ -27,7 +27,7 @@ func outputImports(ctx *Context, w io.Writer) {
 
 	fmt.Fprint(w, "import (\n")
 
-	for _, i := range ctx.Imports {
+	for i, _ := range ctx.Imports {
 		fmt.Fprintf(w, "\t\"%s\"\n", i)
 	}
 	fmt.Fprint(w, ")\n")

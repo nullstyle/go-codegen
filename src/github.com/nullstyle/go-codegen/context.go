@@ -12,7 +12,7 @@ type Context struct {
 	Fset        *token.FileSet
 	Templates   map[string]*template.Template
 	PackageName string
-	Imports     []string
+	Imports     map[string]bool
 }
 
 func NewContext(dir string) (*Context, error) {
@@ -34,6 +34,7 @@ func (ctx *Context) Populate() error {
 	}
 
 	ctx.Templates = make(map[string]*template.Template)
+	ctx.Imports = make(map[string]bool)
 
 	for _, p := range paths {
 		base := path.Base(p)

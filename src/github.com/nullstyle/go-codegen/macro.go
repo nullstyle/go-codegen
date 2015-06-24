@@ -28,7 +28,7 @@ func (mc *TemplateContext) Args() []string {
 }
 
 func (mc *TemplateContext) AddImport(name string) string {
-	mc.Ctx.Imports = append(mc.Ctx.Imports, name)
+	mc.Ctx.Imports[name] = true
 	return ""
 }
 
