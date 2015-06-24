@@ -1,0 +1,7 @@
+language: go
+go:
+- tip
+before_script:
+- go get github.com/constabulary/gb/...
+script:
+- gb test
