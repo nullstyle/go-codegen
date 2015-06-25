@@ -3,6 +3,9 @@ package codegen
 import (
 	"bytes"
 	"fmt"
+	"go/parser"
+	"go/printer"
+	"go/token"
 	"io"
 	"io/ioutil"
 	"path"
@@ -10,12 +13,22 @@ import (
 
 func Output(ctx *Context, p string, data string) error {
 	op := path.Join(ctx.Dir, p)
-	var out bytes.Buffer
+	var (
+		unformatted bytes.Buffer
+		out         bytes.Buffer
+	)
 
-	fmt.Fprintf(&out, "package %s\n", ctx.PackageName)
-	outputImports(ctx, &out)
+	fmt.Fprintf(&unformatted, "package %s\n", ctx.PackageName)
+	outputImports(ctx, &unformatted)
+	unformatted.WriteString(data)
 
-	out.WriteString(data)
+	fset := token.NewFileSet()
+	file, err := parser.ParseFile(fset, p, unformatted.Bytes(), parser.ParseComments)
+	if err != nil {
+		return err
+	}
+
+	printer.Fprint(&out, fset, file)
 
 	return ioutil.WriteFile(op, out.Bytes(), 0644)
 }
