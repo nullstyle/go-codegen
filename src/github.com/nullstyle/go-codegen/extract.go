@@ -25,7 +25,7 @@ func ExtractArgs(ctx *Context, stp *ast.StructType, name string) ([]string, erro
 	}
 
 	if found == nil {
-		return nil, errors.New("Couldn't find template invokation: " + name)
+		return nil, errors.New("Couldn't find template invocation: " + name)
 	}
 
 	if found.Tag == nil {
@@ -49,7 +49,7 @@ func ExtractTemplatesFromType(ctx *Context, stp *ast.StructType) (result []strin
 			result = append(result, name)
 
 			if len(f.Names) != 0 {
-				fmt.Fprintf(os.Stderr, "warn: invokation of template '%s' has a field name\n", name)
+				fmt.Fprintf(os.Stderr, "warn: invocation of template '%s' has a field name\n", name)
 			}
 		}
 	}

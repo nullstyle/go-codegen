@@ -1,4 +1,4 @@
-func (stack *{{ .Name }}) Push(val {{ index .Args 0  }}) {
+func (stack *{{ $.Name }}) Push(val {{ index .Args 0  }}) {
   stack.data = append(stack.data, val)
   stack.top++
 }

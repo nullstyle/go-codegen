@@ -135,6 +135,10 @@ cp ./bin/go-codegen /usr/local/bin
 
 TODO
 
+### Template Data
+
+The "data" available in a template invocation is represented with a
+`TemplateContext` struct.  You can see it [here](https://github.com/nullstyle/go-codegen/blob/master/src/github.com/nullstyle/go-codegen/template.go#L11).
 
 ### Finding templates
 
@@ -151,4 +155,24 @@ TODO
 
 ### Adding Imports
 
-TODO
+A template may add additional imports into generated go giles by calling the
+`AddImport` method on the `TemplateContext` like so:
+
+```
+{{ $.AddImport "net/http" }}
+```
+
+## TODO
+
+- Add additional data about the invoking structs fields
+- Add more facilities to interpret struct tags:  Extract different named tags,
+	for example.
+-
+
+## Contributing
+
+1. Fork it ( https://github.com/nullstyle/go-codegen/fork )
+2. Create your feature branch (`git checkout -b my-new-feature`)
+3. Commit your changes (`git commit -am 'Add some feature'`)
+4. Push to the branch (`git push origin my-new-feature`)
+5. Create a new Pull Request
