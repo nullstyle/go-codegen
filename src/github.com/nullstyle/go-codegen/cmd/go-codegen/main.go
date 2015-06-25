@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	macro "github.com/nullstyle/go-codegen"
+	codegen "github.com/nullstyle/go-codegen"
 )
 
 func main() {
@@ -14,7 +14,7 @@ func main() {
 	}
 
 	for _, arg := range args {
-		err := macro.Process(arg)
+		err := codegen.Process(arg)
 
 		if err != nil {
 			log.Fatalln(err)
