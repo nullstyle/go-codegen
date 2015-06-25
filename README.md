@@ -164,10 +164,19 @@ A template may add additional imports into generated go giles by calling the
 
 ## TODO
 
-- Add additional data about the invoking structs fields
+- Add additional data about the invoking structs fields.
 - Add more facilities to interpret struct tags:  Extract different named tags,
 	for example.
--
+- Template search paths.
+- Better examples
+
+## Example usages
+
+Below is a list of some example usages of go-codegen.  Open up a github issue if
+you would like to add your own.
+
+- [go-horizon](https://github.com/stellar/go-horizon/blob/master/src/github.com/stellar/go-horizon/Action.tmpl) uses this to remove some boilerprate from their HTTP Handler code
+- Some [examples from this project](https://github.com/nullstyle/go-codegen/tree/master/src/examples) illustrate simple usage
 
 ## Contributing
 
