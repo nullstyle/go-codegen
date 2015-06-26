@@ -1,0 +1,26 @@
+box: golang
+dev:
+  steps:
+    - script:
+        name: install gb
+        code: |
+          go get github.com/constabulary/gb/...
+    - internal/watch:
+        code: |
+          gb build
+          ./bin/go-codegen src/examples/args
+        reload: true
+build:
+  steps:
+    - script:
+        name: install gb
+        code: |
+          go get github.com/constabulary/gb/...
+    - script:
+        name: build
+        code: |
+          gb build
+    - script:
+        name: test
+        code: |
+          gb test
