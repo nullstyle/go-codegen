@@ -1,5 +1,5 @@
 # `go-codegen`, a simple code generation system
-
+[![wercker status](https://app.wercker.com/status/c2878a560784e7bb81b4bed1571351e3/m/master "wercker status")](https://app.wercker.com/project/bykey/c2878a560784e7bb81b4bed1571351e3)
 [![Build Status](https://travis-ci.org/nullstyle/go-codegen.svg?branch=master)](https://travis-ci.org/nullstyle/go-codegen)
 [![docs examples](https://sourcegraph.com/api/repos/github.com/nullstyle/go-codegen/.badges/docs-examples.svg)](https://sourcegraph.com/github.com/nullstyle/go-codegen)
 
