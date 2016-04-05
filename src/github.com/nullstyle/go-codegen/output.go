@@ -11,6 +11,7 @@ import (
 	"path"
 )
 
+// Output writes a new file at `p` using `data`
 func Output(ctx *Context, p string, data string) error {
 	op := path.Join(ctx.Dir, p)
 	var (
@@ -40,7 +41,7 @@ func outputImports(ctx *Context, w io.Writer) {
 
 	fmt.Fprint(w, "import (\n")
 
-	for i, _ := range ctx.Imports {
+	for i := range ctx.Imports {
 		fmt.Fprintf(w, "\t\"%s\"\n", i)
 	}
 	fmt.Fprint(w, ")\n")

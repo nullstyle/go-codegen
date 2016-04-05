@@ -10,16 +10,19 @@ import (
 	"strings"
 )
 
-func Process(arg string) error {
+// Process runs the code gen engine against `arg` using `searchPath` to lookup
+// templates.
+func Process(arg string, searchPath []string) error {
 	if strings.HasSuffix(arg, ".go") {
-		return ProcessFilePath(arg)
-	} else {
-		return ProcessDir(arg)
+		return ProcessFilePath(arg, searchPath)
 	}
+	return ProcessDir(arg, searchPath)
 }
 
-func ProcessDir(dir string) error {
-	ctx, err := NewContext(dir)
+// ProcessDir runs the code gen engine against all files in `dir` using
+// `searchPath` to lookup templates.
+func ProcessDir(dir string, searchPath []string) error {
+	ctx, err := NewContext(dir, searchPath)
 	if err != nil {
 		return err
 	}
@@ -34,7 +37,7 @@ func ProcessDir(dir string) error {
 
 	for _, pkg := range pkgs {
 		for _, file := range pkg.Files {
-			src, err := ProcessFile(ctx, file)
+			src, err := processFile(ctx, file)
 
 			if err != nil {
 				return err
@@ -47,8 +50,10 @@ func ProcessDir(dir string) error {
 	return Output(ctx, "main_generated.go", output.String())
 }
 
-func ProcessFilePath(p string) error {
-	ctx, err := NewContext(path.Dir(p))
+// ProcessFilePath runs the code gen engine against a single file, at `p` using
+// `searchPath` to lookup templates.
+func ProcessFilePath(p string, searchPath []string) error {
+	ctx, err := NewContext(path.Dir(p), searchPath)
 	if err != nil {
 		return err
 	}
@@ -59,7 +64,7 @@ func ProcessFilePath(p string) error {
 		return err
 	}
 
-	src, err := ProcessFile(ctx, file)
+	src, err := processFile(ctx, file)
 
 	if err != nil {
 		return err
@@ -70,12 +75,12 @@ func ProcessFilePath(p string) error {
 	return Output(ctx, name+"_generated.go", src)
 }
 
-func ProcessFile(ctx *Context, file *ast.File) (string, error) {
+func processFile(ctx *Context, file *ast.File) (string, error) {
 	var result bytes.Buffer
 	ctx.PackageName = file.Name.Name
 
 	for _, decl := range file.Decls {
-		err := ProcessDecl(ctx, &result, decl)
+		err := processDecl(ctx, &result, decl)
 		if err != nil {
 			return "", err
 		}
@@ -84,7 +89,7 @@ func ProcessFile(ctx *Context, file *ast.File) (string, error) {
 	return result.String(), nil
 }
 
-func ProcessDecl(ctx *Context, w io.Writer, decl ast.Decl) error {
+func processDecl(ctx *Context, w io.Writer, decl ast.Decl) error {
 	gdp, ok := decl.(*ast.GenDecl)
 
 	if !ok {
@@ -92,7 +97,7 @@ func ProcessDecl(ctx *Context, w io.Writer, decl ast.Decl) error {
 	}
 
 	for _, spec := range gdp.Specs {
-		err := ProcessSpec(ctx, w, spec)
+		err := processSpec(ctx, w, spec)
 		if err != nil {
 			return err
 		}
@@ -101,7 +106,7 @@ func ProcessDecl(ctx *Context, w io.Writer, decl ast.Decl) error {
 	return nil
 }
 
-func ProcessSpec(ctx *Context, w io.Writer, spec ast.Spec) error {
+func processSpec(ctx *Context, w io.Writer, spec ast.Spec) error {
 	tsp, ok := spec.(*ast.TypeSpec)
 
 	if !ok {
