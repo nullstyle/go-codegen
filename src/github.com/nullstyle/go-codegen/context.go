@@ -16,6 +16,7 @@ type Context struct {
 	Templates   map[string]*template.Template
 	PackageName string
 	Imports     map[string]bool
+	Results     map[string]string
 }
 
 // NewContext initializes a new code generation context.
@@ -25,6 +26,7 @@ func NewContext(dir string, searchPaths []string) (*Context, error) {
 		SearchPaths: searchPaths,
 		Fset:        token.NewFileSet(),
 		PackageName: "main", // default to main
+		Results:     map[string]string{},
 	}
 	return result, result.Populate()
 }

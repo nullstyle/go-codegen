@@ -1,10 +1,10 @@
 package codegen
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"go/ast"
-	"io"
 	"os"
 )
 
@@ -32,7 +32,7 @@ func (mc *TemplateContext) AddImport(name string) string {
 	return ""
 }
 
-func RunTemplate(ctx *Context, w io.Writer, templateName string, typeName string, st *ast.StructType) error {
+func RunTemplate(ctx *Context, templateName string, typeName string, st *ast.StructType) error {
 	template, ok := ctx.Templates[templateName]
 	if !ok {
 		return errors.New("Could not find template: " + templateName)
@@ -46,8 +46,14 @@ func RunTemplate(ctx *Context, w io.Writer, templateName string, typeName string
 		Ctx:          ctx,
 		Struct:       st,
 	}
+	var result bytes.Buffer
+	err := template.Execute(&result, mc)
 
-	err := template.Execute(w, mc)
+	if err != nil {
+		return err
+	}
 
-	return err
+	ctx.Results[typeName] = result.String()
+
+	return nil
 }

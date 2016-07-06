@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"go/ast"
 	"go/parser"
-	"io"
 	"path"
+	"sort"
 	"strings"
 )
 
@@ -33,21 +33,17 @@ func ProcessDir(dir string, searchPath []string) error {
 		return err
 	}
 
-	var output bytes.Buffer
-
 	for _, pkg := range pkgs {
 		for _, file := range pkg.Files {
-			src, err := processFile(ctx, file)
+			err := processFile(ctx, file)
 
 			if err != nil {
 				return err
 			}
-
-			fmt.Fprintln(&output, src)
 		}
 	}
 
-	return Output(ctx, "main_generated.go", output.String())
+	return Output(ctx, "main_generated.go", collectResults(ctx))
 }
 
 // ProcessFilePath runs the code gen engine against a single file, at `p` using
@@ -64,7 +60,7 @@ func ProcessFilePath(p string, searchPath []string) error {
 		return err
 	}
 
-	src, err := processFile(ctx, file)
+	err = processFile(ctx, file)
 
 	if err != nil {
 		return err
@@ -72,32 +68,31 @@ func ProcessFilePath(p string, searchPath []string) error {
 
 	base := path.Base(p)
 	name := base[:len(base)-len(".go")]
-	return Output(ctx, name+"_generated.go", src)
+	return Output(ctx, name+"_generated.go", collectResults(ctx))
 }
 
-func processFile(ctx *Context, file *ast.File) (string, error) {
-	var result bytes.Buffer
+func collectResults(ctx *Context) string {
+	var output bytes.Buffer
+	var resultKeys []string
+
+	for k := range ctx.Results {
+		resultKeys = append(resultKeys, k)
+	}
+
+	sort.Strings(resultKeys)
+
+	for _, k := range resultKeys {
+		fmt.Fprintln(&output, ctx.Results[k])
+	}
+
+	return output.String()
+}
+
+func processFile(ctx *Context, file *ast.File) error {
 	ctx.PackageName = file.Name.Name
 
 	for _, decl := range file.Decls {
-		err := processDecl(ctx, &result, decl)
-		if err != nil {
-			return "", err
-		}
-	}
-
-	return result.String(), nil
-}
-
-func processDecl(ctx *Context, w io.Writer, decl ast.Decl) error {
-	gdp, ok := decl.(*ast.GenDecl)
-
-	if !ok {
-		return nil
-	}
-
-	for _, spec := range gdp.Specs {
-		err := processSpec(ctx, w, spec)
+		err := processDecl(ctx, decl)
 		if err != nil {
 			return err
 		}
@@ -106,7 +101,24 @@ func processDecl(ctx *Context, w io.Writer, decl ast.Decl) error {
 	return nil
 }
 
-func processSpec(ctx *Context, w io.Writer, spec ast.Spec) error {
+func processDecl(ctx *Context, decl ast.Decl) error {
+	gdp, ok := decl.(*ast.GenDecl)
+
+	if !ok {
+		return nil
+	}
+
+	for _, spec := range gdp.Specs {
+		err := processSpec(ctx, spec)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func processSpec(ctx *Context, spec ast.Spec) error {
 	tsp, ok := spec.(*ast.TypeSpec)
 
 	if !ok {
@@ -125,7 +137,7 @@ func processSpec(ctx *Context, w io.Writer, spec ast.Spec) error {
 	}
 
 	for _, templateName := range templates {
-		err := RunTemplate(ctx, w, templateName, tsp.Name.Name, stp)
+		err := RunTemplate(ctx, templateName, tsp.Name.Name, stp)
 		if err != nil {
 			return err
 		}
